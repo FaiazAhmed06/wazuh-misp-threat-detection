@@ -3,7 +3,6 @@ Modified and documented by Faiaz Ahmed
 
 In this project, I integrated Wazuh (open-source SIEM) with MISP (Malware Information Sharing Platform) to automate threat detection and intelligence correlation. The goal is to enrich Wazuh alerts with IOCs (Indicators of Compromise) from MISP and enable **active-response** actions for security events.  
 
-<img width="1855" height="929" alt="image" src="dashboard.png" />
 
 ---
 
@@ -16,7 +15,7 @@ In this project, I integrated Wazuh (open-source SIEM) with MISP (Malware Inform
 ---
 
 ## Architecture
-<img width="1855" height="929" alt="image" src="arsitektur.png" />
+
 
 | Event Type              | Metadata (Win / Linux)                | Purpose                                                       |
 |--------------------------|---------------------------------------|---------------------------------------------------------------|
