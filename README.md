@@ -146,7 +146,7 @@ This blocks malicious IPs if specific rule IDs are triggered.
 ---
 
 ## Conclusion  
-This project shows how I, built a working integration of Wazuh + MISP to automate threat intelligence correlation and response.  
+This project shows how I, built and modified a working integration of Wazuh + MISP to automate threat intelligence correlation and response.  
 It demonstrates the design SIEM integrations, write custom Python connectors, and apply SOC use cases with MITRE ATT&CK mapping.  
 
 Next steps: scaling integrations, more active responses, and dashboard improvements.  
