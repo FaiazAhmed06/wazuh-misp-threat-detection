@@ -1,0 +1,48 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.env
+.venv
+venv/
+ENV/
+build/
+dist/
+
+# Logs & temporary files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# Wazuh-specific
+ossec.log
+integrations.log
+active-responses.log
+queue/
+etc/lists/*
+etc/tmp/*
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# Backup files
+*~
+*.old
+*.orig
+*.save

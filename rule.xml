@@ -1,0 +1,128 @@
+<!-- 
+  Custom Wazuh-MISP Rules
+  Modified and maintained by Faiaz Ahmed
+-->
+
+<group name="Integration, misp_alert, ">
+  <rule id="100620" level="7">
+    <field name="integration">misp</field>
+    <description>MISPs</description>
+    <options>no_log</options>
+  </rule>
+</group>
+
+<group name="Error, misp_alert,">
+  <rule id="100621" level="5">
+    <if_sid>100620</if_sid>
+    <field name="misp.error">\.+</field>
+    <description>MISP - Error connecting to API</description>
+    <options>no_full_log</options>
+  </rule>
+</group>
+
+<group name="Network, misp_alert,">
+  <rule id="100622" level="10">
+    <if_sid>100620</if_sid>
+    <field name="misp.category">\.+</field>
+    <field name="misp.value">\d+.\d+.\d+.\d+\.*</field>
+    <description>MISP - IoC found in Threat Intel - Category: $(misp.category), Attribute: $(misp.value)</description>
+  </rule>
+</group>
+
+<group name="Network_Danger, misp_alert,">
+  <rule id="100150" level="14">
+    <if_sid>5715</if_sid>
+    <list field="srcip" lookup="not_address_match_key">etc/lists/ip_whitelist</list>
+    <description>Login Berhasil dari IP non-whitelist oleh user : $(dstuser)</description>
+    <group></group>
+  </rule>
+
+  <rule id="10229" level="14">
+    <if_sid>92657</if_sid>
+    <field name="win.system.eventID">^4624$</field>
+    <field name="win.eventdata.logonType">^3$</field>
+    <list field="win.eventdata.ipAddress" lookup="not_address_match_key">etc/lists/ip_whitelist</list>
+    <description>Login Berhasil dari IP non-whitelist (RDP) oleh user : $(win.eventdata.targetUserName)  IP : $(win.eventdata.ipAddress)</description>
+    <group>rdp,authentication_success,windows,</group>
+  </rule>
+</group>
+
+<group name="Malware, misp, misp_alert,">
+  <rule id="100630" level="14">
+    <if_sid>100620</if_sid>
+    <field name="misp.found_attribute">True</field>
+    <field name="misp.threat_level">High</field>
+    <description>MISP - 🔴 High Threat Detected: "$(misp.value)". Context: $(misp.event_info)</description>
+    <group>malware,attack,gdpr_IV_35.7.d,</group>
+  </rule>
+
+  <rule id="100631" level="12">
+    <if_sid>100620</if_sid>
+    <field name="misp.found_attribute">True</field>
+    <field name="misp.threat_level">Medium</field>
+    <description>MISP - 🟠 Medium Threat Detected: "$(misp.value)". Context: $(misp.event_info)</description>
+    <group>malware,attack,</group>
+  </rule>
+
+  <rule id="100632" level="10">
+    <if_sid>100620</if_sid>
+    <field name="misp.found_attribute">True</field>
+    <field name="misp.threat_level">Low</field>
+    <description>MISP - 🟡 Low Threat Detected: "$(misp.value)". Context: $(misp.event_info)</description>
+    <group>policy_violation,</group>
+  </rule>
+
+  <rule id="100633" level="8">
+    <if_sid>100620</if_sid>
+    <field name="misp.found_attribute">True</field>
+    <field name="misp.threat_level">Undefined|Unknown</field>
+    <description>MISP - ⚪ Undefined Threat: "$(misp.value)". Context: $(misp.event_info)</description>
+  </rule>
+</group>
+
+<group name="Domain_URL, misp_alert,">
+  <rule id="110627" level="12">
+    <if_sid>31100</if_sid>
+    <field name="misp.category">\.+</field>
+    <field name="misp.value"></field>
+    <description>MISP - Mendeteksi Akses Domain/URL Berbahaya - Kategori: $(misp.category), Atribut: $(misp.value)</description>
+    <options>no_full_log</options>
+  </rule>
+</group>
+
+<group name="audit_rule,misp_alert,">
+  <rule id="100210" level="8">
+    <if_sid>80792</if_sid>
+    <list field="audit.command" lookup="match_key_value" check_value="critical">etc/lists/potensi_perintah_berbahaya</list>
+    <description>Audit: Potensi Perintah Berbahaya: $(audit.exe)</description>
+  </rule>
+  <rule id="100211" level="7">
+    <if_sid>80792</if_sid>
+    <list field="audit.command" lookup="match_key_value" check_value="high">etc/lists/potensi_perintah_berbahaya</list>
+    <description>Audit: Potensi Perintah Berbahaya: $(audit.exe)</description>
+  </rule>
+  <rule id="100212" level="7">
+    <if_sid>80792</if_sid>
+    <list field="audit.command" lookup="match_key_value" check_value="low">etc/lists/potensi_perintah_berbahaya</list>
+    <description>Audit: Potensi Perintah Berbahaya: $(audit.exe)</description>
+  </rule>
+</group>
+
+<group name="linux, webshell, windows,">
+  <rule id="100502" level="7">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">(?i).php$|.phtml$|.php3$|.php4$|.php5$|.phps$|.phar$|.asp$|.aspx$|.jsp$|.cshtml$|.vbhtml$</field>
+    <description>Perubahan file : $(file)</description>
+  </rule>
+  <rule id="100503" level="13">
+    <if_sid>100502</if_sid>
+    <field name="changed_content" type="pcre2">(?i)passthru|exec|eval|shell_exec|assert|str_rot13|system|phpinfo|base64_decode|chmod|mkdir|fopen|fclose|readfile|show_source|proc_open|pcntl_exec|execute|WScript.Shell|WScript.Network|FileSystemObject|Adodb.stream</field>
+    <description>Indikasi webshell pada file : $(file)</description>
+    <mitre>
+      <id>T1105</id>
+      <id>T1505.003</id>
+    </mitre>
+  </rule>
+</group>
+
+<!-- Additional rules can be added here to improve integration -->
