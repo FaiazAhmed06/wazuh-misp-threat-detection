@@ -103,7 +103,7 @@ Add this hash as a custom IOC in MISP.
 ```bash
 echo "file_custom" > file02.txt
 ```
-If your integration works, Wazuh will match the IOC against MISP.
+If integration works, Wazuh will match the IOC against MISP.
 
 4. Troubleshoot
 ```bash
